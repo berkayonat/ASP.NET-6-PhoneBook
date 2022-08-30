@@ -3,7 +3,7 @@ using PhoneBook.CQRS.DTOs;
 
 namespace PhoneBook.CQRS.Commands.CreatePerson
 {
-    public class CreatePersonCommand : IRequest<bool>
+    public class CreatePersonCommand : IRequest<int>
     {
         public CreatePersonCommand(string? name, string? phoneNumber, string? email, string? address)
         {

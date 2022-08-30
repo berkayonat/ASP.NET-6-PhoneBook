@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using PhoneBook.CQRS.DTOs;
 using PhoneBook.Repository.Interfaces;
 
@@ -7,22 +8,16 @@ namespace PhoneBook.CQRS.Queries.GetPersonById
     public class GetPersonByIdQueryHandler : IRequestHandler<GetPersonByIdQuery, PersonDto>
     {
         private readonly IPersonRepository _personRepository;
-        public GetPersonByIdQueryHandler(IPersonRepository personRepository)
+        private readonly IMapper _mapper;
+        public GetPersonByIdQueryHandler(IPersonRepository personRepository, IMapper mapper)
         {
             _personRepository = personRepository;
+            _mapper = mapper;
         }
-        public async Task<PersonDto> Handle(GetPersonByIdQuery request, CancellationToken cancellationToken)
+        public Task<PersonDto> Handle(GetPersonByIdQuery request, CancellationToken cancellationToken)
         {
-            var entity = await _personRepository.GetById(request.Id);
-            return new PersonDto
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                PhoneNumber = entity.PhoneNumber,
-                Email = entity.Email,
-                Address = entity.Address,
-                CreatedDate = entity.CreatedDate,
-            };
+            var entity = _personRepository.GetById(request.Id);
+            return Task.FromResult(_mapper.Map<PersonDto>(entity));
         }
     }
 }

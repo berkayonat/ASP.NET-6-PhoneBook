@@ -4,14 +4,14 @@ using PhoneBook.Repository.Interfaces;
 
 namespace PhoneBook.CQRS.Commands.CreatePerson
 {
-    public class CreatePersonCommandHandler : IRequestHandler<CreatePersonCommand, bool>
+    public class CreatePersonCommandHandler : IRequestHandler<CreatePersonCommand, int>
     {
         private readonly IPersonRepository _personRepository;
         public CreatePersonCommandHandler(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
         }
-        public async Task<bool> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
+        public Task<int> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
         {
             var entity = new Person()
             {
@@ -21,7 +21,8 @@ namespace PhoneBook.CQRS.Commands.CreatePerson
                 Address = request.Address,
                 CreatedDate = DateTime.Now,
             };
-            return await _personRepository.Add(entity);
+            _personRepository.Add(entity);
+            return Task.FromResult(entity.Id);
         }
     }
 }

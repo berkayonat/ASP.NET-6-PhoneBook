@@ -4,24 +4,23 @@ using PhoneBook.Repository.Interfaces;
 
 namespace PhoneBook.CQRS.Commands.UpdatePerson
 {
-    public class UpdatePersonCommandHandler : IRequestHandler<UpdatePersonCommand, bool>
+    public class UpdatePersonCommandHandler : IRequestHandler<UpdatePersonCommand, int>
     {
         private readonly IPersonRepository _personRepository;
         public UpdatePersonCommandHandler(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
         }
-        public async Task<bool> Handle(UpdatePersonCommand request, CancellationToken cancellationToken)
+        public Task<int> Handle(UpdatePersonCommand request, CancellationToken cancellationToken)
         {
-            var entity = new Person()
-            {
-                Name = request.Name,
-                PhoneNumber = request.PhoneNumber,
-                Email = request.Email,
-                Address = request.Address,
+            var entity = _personRepository.GetById(request.Id);
+            entity.Name = request.Name;
+            entity.PhoneNumber = request.PhoneNumber;
+            entity.Email = request.Email;
+            entity.Address = request.Address;
 
-            };
-            return await _personRepository.Update(entity);
+            _personRepository.Update(entity);
+            return Task.FromResult(request.Id);
         }
     }
 }

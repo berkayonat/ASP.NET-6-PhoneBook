@@ -3,16 +3,17 @@ using PhoneBook.Repository.Interfaces;
 
 namespace PhoneBook.CQRS.Commands.DeletePerson
 {
-    public class DeletePersonCommandHandler : IRequestHandler<DeletePersonCommand, bool>
+    public class DeletePersonCommandHandler : IRequestHandler<DeletePersonCommand, int>
     {
         private readonly IPersonRepository _personRepository;
         public DeletePersonCommandHandler(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
         }
-        public async Task<bool> Handle(DeletePersonCommand request, CancellationToken cancellationToken)
+        public Task<int> Handle(DeletePersonCommand request, CancellationToken cancellationToken)
         {
-            return await _personRepository.Delete(request.Id);
+            _personRepository.Delete(request.Id);
+            return Task.FromResult(request.Id);
         }
     }
 }
