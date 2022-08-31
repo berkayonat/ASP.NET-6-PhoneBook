@@ -33,9 +33,20 @@ namespace PhoneBook.Controllers
         }
 
         // GET: PersonController/Details/5
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
+            if (id == 0)
+            {
+                return NotFound();
+            }
+            var obj = await _mediator.Send(new GetPersonByIdQuery(id));
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            var model = _mapper.Map<PersonViewModel>(obj);
+
+            return View(model);
         }
 
         // GET: PersonController/Create

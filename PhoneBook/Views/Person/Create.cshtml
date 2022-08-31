@@ -33,9 +33,14 @@
         </div>
         <button type="submit" class="btn btn-primary" style="width:150px">Create</button>
         <a asp-controller="Person" asp-action="Index" class="btn btn-secondary" style="width:150px">
-            Back to Person List
+            Back to List
         </a>
     </div>
 </form>
 
+@section Scripts {
+@{
+    <partial name="_ValidationScriptsPartial" />
+}
+}
 
