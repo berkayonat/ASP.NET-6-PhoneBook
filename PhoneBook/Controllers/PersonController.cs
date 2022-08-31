@@ -1,31 +1,45 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PhoneBook.CQRS.Commands.CreatePerson;
+using PhoneBook.CQRS.Commands.DeletePerson;
+using PhoneBook.CQRS.Commands.UpdatePerson;
+using PhoneBook.CQRS.Queries.GetAllPersons;
+using PhoneBook.CQRS.Queries.GetPersonById;
+using PhoneBook.Models;
+using PhoneBook.Models.ViewModels;
+using System.Collections.Generic;
 
 namespace PhoneBook.Controllers
 {
     public class PersonController : Controller
     {
-        IMediator _mediator;
-        public PersonController(IMediator mediator)
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
+        public PersonController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
+
         }
 
         // GET: PersonController
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var objPersonList = await _mediator.Send(new GetAllPersonsQuery());
+            var model = _mapper.Map<IEnumerable<PersonViewModel>>(objPersonList);
+            return View(model);
         }
 
         // GET: PersonController/Details/5
-        public ActionResult Details(int id)
+        public IActionResult Details(int id)
         {
             return View();
         }
 
         // GET: PersonController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
@@ -33,58 +47,56 @@ namespace PhoneBook.Controllers
         // POST: PersonController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(PersonViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                await _mediator.Send(new CreatePersonCommand(model.Name, model.PhoneNumber, model.Email, model.Address));
+                return RedirectToAction("index");
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
         // GET: PersonController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            if (id == 0)
+            {
+                return NotFound();
+            }
+            var obj = await _mediator.Send(new GetPersonByIdQuery(id));
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            var model = _mapper.Map<PersonViewModel>(obj);
+
+            return View(model);
         }
 
         // POST: PersonController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(PersonViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
+                await _mediator.Send(new UpdatePersonCommand(model.Id, model.Name, model.PhoneNumber, model.Email, model.Address));
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
-        // GET: PersonController/Delete/5
-        public ActionResult Delete(int id)
+        // GET
+        public async Task<IActionResult> Delete(int id)
         {
-            return View();
-        }
-
-        // POST: PersonController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
+            var entity = await _mediator.Send(new GetPersonByIdQuery(id));
+            if (entity == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
+            await _mediator.Send(new DeletePersonCommand(id));
+            return RedirectToAction(nameof(Index));
         }
     }
 }

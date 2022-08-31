@@ -17,6 +17,7 @@ namespace PhoneBook.Repository.Repositories
         public async Task<bool> Add(T entity)
         {
             await dbSet.AddAsync(entity);
+            _context.SaveChanges();
             return true;    
         }
 
@@ -28,6 +29,7 @@ namespace PhoneBook.Repository.Repositories
             if (exist == null) return false;
 
             dbSet.Remove(exist);
+            _context.SaveChanges();
 
             return true;
         }
@@ -37,19 +39,20 @@ namespace PhoneBook.Repository.Repositories
             return await dbSet.Where(predicate).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public IEnumerable<T> GetAll()
         {
-            return await dbSet.ToListAsync();
+            return dbSet.ToList();
         }
 
-        public async Task<T> GetById(int id)
-        {
-            return await dbSet.FindAsync(id);
+        public T GetById(int id)
+        {  
+            return dbSet.Find(id);
         }
 
         public Task<bool> Update(T entity)
         {
             dbSet.Update(entity);
+            _context.SaveChanges();
             return Task.FromResult(true);
         }
     }

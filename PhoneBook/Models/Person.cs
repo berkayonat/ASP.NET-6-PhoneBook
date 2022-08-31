@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PhoneBook.Models
+﻿namespace PhoneBook.Models
 {
     public class Person
     {
