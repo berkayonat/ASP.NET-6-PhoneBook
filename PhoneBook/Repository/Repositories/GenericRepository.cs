@@ -34,9 +34,9 @@ namespace PhoneBook.Repository.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
+        public IEnumerable<T> Find(Expression<Func<T, bool>> expression)
         {
-            return await dbSet.Where(predicate).ToListAsync();
+            return dbSet.Where(expression).ToList();
         }
 
         public IEnumerable<T> GetAll()

@@ -7,6 +7,7 @@ using PhoneBook.CQRS.Commands.DeletePerson;
 using PhoneBook.CQRS.Commands.UpdatePerson;
 using PhoneBook.CQRS.Queries.GetAllPersons;
 using PhoneBook.CQRS.Queries.GetPersonById;
+using PhoneBook.CQRS.Queries.GetPersonsWithFilters;
 using PhoneBook.Models;
 using PhoneBook.Models.ViewModels;
 using System.Collections.Generic;
@@ -25,8 +26,15 @@ namespace PhoneBook.Controllers
         }
 
         // GET: PersonController
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string filter)
         {
+            if (!String.IsNullOrEmpty(filter))
+            {
+                var searchResult = await _mediator.Send(new GetPersonsWithFiltersQuery(filter));
+                var result = _mapper.Map<IEnumerable<PersonViewModel>>(searchResult);
+                return View(result);
+            }
+
             var objPersonList = await _mediator.Send(new GetAllPersonsQuery());
             var model = _mapper.Map<IEnumerable<PersonViewModel>>(objPersonList);
             return View(model);

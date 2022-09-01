@@ -9,6 +9,6 @@ namespace PhoneBook.Repository.Interfaces
         Task<bool> Add(T entity);
         Task<bool> Delete(int id);
         Task<bool> Update(T entity);
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
+        IEnumerable<T> Find(Expression<Func<T, bool>> predicate);
     }
 }

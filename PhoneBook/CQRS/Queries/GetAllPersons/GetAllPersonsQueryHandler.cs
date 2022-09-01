@@ -16,7 +16,7 @@ namespace PhoneBook.CQRS.Queries.GetAllPersons
         }
         public Task<IEnumerable<PersonDto>> Handle(GetAllPersonsQuery request, CancellationToken cancellationToken)
         {
-            var entities = _personRepository.GetAll();
+            var entities = _personRepository.GetAll().OrderByDescending(x => x.CreatedDate);
             return Task.FromResult(_mapper.Map<IEnumerable<PersonDto>>(entities));
         }
     }
