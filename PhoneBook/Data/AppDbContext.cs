@@ -12,6 +12,5 @@ namespace PhoneBook.Data
 
         public DbSet<Person> Persons { get; set; }
 
-        public DbSet<PhoneBook.Models.ViewModels.PersonViewModel>? PersonViewModel { get; set; }
     }
 }
